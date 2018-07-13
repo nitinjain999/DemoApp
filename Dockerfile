@@ -4,8 +4,10 @@ FROM appsvc/demoapp-base:latest
 RUN echo "root:Docker!" | chpasswd \
      && apk update \
      && apk add --update openssh-server
+RUN apk add gcc musl-dev python3-dev libffi-dev openssl-dev
 COPY sshd_config /etc/ssh/
-
+RUN pip install --upgrade pip 
+RUN pip install --upgrade setuptools
 RUN ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
 RUN ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
@@ -15,7 +17,7 @@ RUN ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
 ADD ./Backend /app/Backend
 WORKDIR /app/Backend
 RUN apk add --no-cache git
-RUN pip install -r requirements.txt
+RUN pip install -t packages -r requirements.txt
 
 ### Frontend
 RUN npm install -g @angular/cli
